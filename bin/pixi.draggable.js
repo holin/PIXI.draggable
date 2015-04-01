@@ -357,8 +357,8 @@ PIXI.DragAndDropManager.prototype.onDrag = function(item, mouse)
     }
 
     // get start position    
-    item.original.x = item.x;
-    item.original.y = item.y;
+    item.original.x = item.worldTransform.tx;
+    item.original.y = item.worldTransform.ty;
 
     // define start x / y
     if(!mouse.start)
@@ -517,26 +517,26 @@ PIXI.DragAndDropManager.prototype.onDragMove = (function()
             // x bounds
             if(options.axis !== 'y')
             {
-                if (x < 0)
+                if (x < containment.x)
                 {
-                    x = 0;
+                    x = containment.x;
                 }
-                else if (x2 > containment.width)
+                else if (x2 > containment.x + containment.width)
                 {
-                    x = containment.width - item.width;
+                    x = containment.x + containment.width - item.width;
                 }
             }
 
             // y bounds
             if(options.axis !== 'x')
             {
-                if (y < 0)
+                if (y < containment.y)
                 {
-                    y = 0;
+                    y = containment.y;
                 }
-                else if (y2 > containment.height)
+                else if (y2 > containment.y + containment.height)
                 {
-                    y = containment.height - item.height;
+                    y = containment.y + containment.height - item.height;
                 }
             }
         }
@@ -655,23 +655,25 @@ PIXI.DragAndDropManager.prototype.onDragMove = (function()
             }
         }
 
+        var local = item.dragElement.parent.toLocal({x:x,y:y});
+
         // align along x axis
         if(options.axis === 'x')
         {
-            item.dragElement.x = x;
+            item.dragElement.x = local.x;
         }
 
         // align along y axis
         else if(options.axis === 'y')
         {
-            item.dragElement.y = y;
+            item.dragElement.y = local.y;
         }
 
         // both
         else
         {
-            item.dragElement.x = x;
-            item.dragElement.y = y;
+            item.dragElement.x = local.x;
+            item.dragElement.y = local.y;
         }
 
         // call custom drag callback
