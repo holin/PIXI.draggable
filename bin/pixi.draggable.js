@@ -1177,11 +1177,11 @@ PIXI.DragAndDropManager.options = {
  * @method rebuildInteractiveGraph
  * @private
  */
-PIXI.InteractionManager.prototype.rebuildInteractiveGraph = (function()
+PIXI.interaction.InteractionManager.prototype.rebuildInteractiveGraph = (function()
 {
 
-    // store previously set PIXI.InteractionManager.prototype.rebuildInteractiveGraph
-    var rebuildInteractiveGraph = PIXI.InteractionManager.prototype.rebuildInteractiveGraph;
+    // store previously set PIXI.interaction.InteractionManager.prototype.rebuildInteractiveGraph
+    var rebuildInteractiveGraph = PIXI.interaction.InteractionManager.prototype.rebuildInteractiveGraph;
 
     return function()
     {

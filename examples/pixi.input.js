@@ -649,7 +649,7 @@
                 } 
                 else 
                 {
-                    this.texture.baseTexture.dirty();
+                    //this.texture.baseTexture.dirty();
                 }
             },
 
