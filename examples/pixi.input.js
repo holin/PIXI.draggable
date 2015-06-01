@@ -1203,7 +1203,7 @@
                     if(this._textNeedsUpdate)
                     {
                         this.currText = this.clipText();
-                        this.text.setText(this.currText || "");
+                        this.text.text = this.currText || "";
                         this.text.updateText();
                         this._textNeedsUpdate = false;
                     }
@@ -1534,9 +1534,9 @@
 
 
         // pixi button field
-        PIXI.Button = function( data )
+        PIXI.Button = function( renderer, data )
         {
-
+            this._renderer = renderer;
             this.tabIndex = -1; // disable tabbing
 
             this.data = data || {};
@@ -1650,7 +1650,7 @@
 
                     if(this._textNeedsUpdate)
                     {
-                        this.text.setText(this.data.value || "");
+                        this.text.text = this.data.value || "";
                         this.text.updateText();
                         if(this.data.align === "center")
                         {
@@ -1667,6 +1667,7 @@
 
             renderTexture: function()
             {
+                var renderer = this._renderer;
                 if(this.data.ninepatch && PIXI.NinePatch !== undefined)
                 {
                     if(this._cachedNinePatch !== this.data.ninepatch)
@@ -1680,7 +1681,7 @@
                         if(this.ninepatch.loaded < 9)
                         {
                             this.ninepatch.onReady(function() {
-                                this.texture = this.ninepatch.generateTexture();
+                                this.texture = this.ninepatch.generateTexture(renderer);
                                 this.data.textboxTop = this.ninepatch.head.height;
                                 this.data.textboxHeight = this.ninepatch.body.height;
                                 this.data.textboxLeft = this.ninepatch.children[3].width;
@@ -1690,7 +1691,7 @@
                         }
                         else
                         {
-                            this.texture = this.ninepatch.generateTexture();
+                            this.texture = this.ninepatch.generateTexture(renderer);
                             this.data.textboxTop = this.ninepatch.head.height;
                             this.data.textboxHeight = this.ninepatch.body.height;
                             this.data.textboxLeft = this.ninepatch.children[3].width;
@@ -2141,7 +2142,7 @@
 
                     if(this._textNeedsUpdate)
                     {
-                        this.text.setText(this.data.value || "");
+                        this.text.text = this.data.value || "";
                         this.text.updateText();
                         this._textNeedsUpdate = false;
                     }

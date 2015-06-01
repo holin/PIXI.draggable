@@ -58,8 +58,8 @@ stats.domElement.style.top = '0px';
 
 document.body.appendChild( stats.domElement );
 
-    var stage = new PIXI.Stage( 0xffffff );
-    var renderer = PIXI.autoDetectRenderer( 960, 400 );
+    var stage = new PIXI.Container();
+    var renderer = PIXI.autoDetectRenderer( 960, 400, {background: 0xffffff} );
     document.body.appendChild(renderer.view);
     
     var examples = [];
@@ -83,11 +83,11 @@ document.body.appendChild( stats.domElement );
 
     for(var i = 0; i < items.length; i++)
     {
-        examples[i] = new PIXI.DisplayObjectContainer();
+        examples[i] = new PIXI.Container();
         examples[i].visible = false;
         stage.addChild(examples[i]);
 
-        buttons[i] = new PIXI.Button({
+        buttons[i] = new PIXI.Button(renderer, {
             width: 150,
             height: 30,
             ninepatch: i > 7 ? "img/blue_button_0*.png" : "img/yellow_button_0*.png",
@@ -106,7 +106,7 @@ document.body.appendChild( stats.domElement );
         stage.addChild(buttons[i]);
     }
 
-    var exampledoc = new PIXI.DisplayObjectContainer();
+    var exampledoc = new PIXI.Container();
     stage.addChild(exampledoc);
 
     var curr = null;

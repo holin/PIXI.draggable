@@ -36,13 +36,13 @@
      * A NinePatchContainer is a collection of 9 Sprites. 4 corner Sprites, 4 side Sprites and 1 Sprite for the content.
      *
      * @class NinePatch
-     * @extends DisplayObjectContainer
+     * @extends Container
      * @constructor
      */
     PIXI.NinePatch = function( width, height, image, useFrames, scaleMode )
     {
 
-        PIXI.DisplayObjectContainer.call(this);
+        PIXI.Container.call(this);
 
         this.scaleMode = scaleMode || PIXI.NinePatch.scaleModes.NINEPATCH;
         
@@ -96,7 +96,7 @@
     };
 
     // constructor
-    PIXI.NinePatch.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+    PIXI.NinePatch.prototype = Object.create( PIXI.Container.prototype );
     PIXI.NinePatch.prototype.constructor = PIXI.NinePatch;
 
     // NinePatch scale modes.
