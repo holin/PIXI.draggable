@@ -46,11 +46,16 @@
     {
         this.__draggable = false;
 
+        //TODO Ersetzen durch .on("event", callback)
         // restore events (?)
-        this.mousedown = this.touchstart = options.mousedown;
-        this.mousemove = this.touchmove = options.mousemove;
-        this.mouseup = this.touchend = options.mouseup;
-        this.mouseupoutside = this.touchendoutside = options.mouseupoutside;
+        this.off("mousedown",options.mousedownbind);
+        this.off("touchstart",options.mousedownbind);
+        this.off("mousemove",options.mousemovebind);
+        this.off("touchmove",options.mousemovebind);
+        this.off("mouseup",options.mouseupbind);
+        this.off("touchend",options.mouseupbind);
+        this.off("mouseupoutside",options.mouseupoutsidebind);
+        this.off("touchendoutside",options.mouseupoutsidebind);
 
         // check all interactive events
         //this.interactive = !!(this.mouseout || this.mouseover || this.click || this.tap || this.mousedown || this.touchstart || this.mousemove || this.touchmove || this.mouseup || this.touchend || this.mouseupoutside || this.touchendoutside);
@@ -67,6 +72,7 @@
         }
 
         var options = name || {};
+        this.DragAndDropManager = options['manager'];
 
         // fill options with defaults
         for(var prop in PIXI.DragAndDropManager.options.drag)
@@ -77,11 +83,12 @@
             }
         }
 
+        //TODO Ersetzen durch .on("event", listener)
         // carry over old events
-        if(this.mousedown && !options.mousedown) options.mousedown = this.mousedown;
-        if(this.mousemove && !options.mousemove) options.mousemove = this.mousemove;
-        if(this.mouseup && !options.mouseup) options.mouseup = this.mouseup;
-        if(this.mouseupoutside && !options.mouseupoutside) options.mouseupoutside = this.mouseupoutside;
+        //if(this.mousedown && !options.mousedown) options.mousedown = this.mousedown;
+        //if(this.mousemove && !options.mousemove) options.mousemove = this.mousemove;
+        //if(this.mouseup && !options.mouseup) options.mouseup = this.mouseup;
+        //if(this.mouseupoutside && !options.mouseupoutside) options.mouseupoutside = this.mouseupoutside;
 
         this.dragOptions = options;
 
@@ -94,15 +101,33 @@
             this.snapElements = [];
         }
 
+        // only initialize this array if we actually use collision
+        if(options.collidable)
+        {
+            this.collidableElements = [];
+        }
+
         // set interactive 
         this.interactive = true;
         this.__draggable = true;
 
+        //TODO Use Eventlistener
         // mouse events // maybe avoid bindings?
-        this.mousedown = this.touchstart = PIXI.DragAndDropManager.onMouseDown.bind(this);
-        this.mousemove = this.touchmove = PIXI.DragAndDropManager.onMouseMove.bind(this);
-        this.mouseup = this.touchend = PIXI.DragAndDropManager.onMouseUp.bind(this);
-        this.mouseupoutside = this.touchendoutside = PIXI.DragAndDropManager.onMouseUpOutside.bind(this);
+        options['mousedownbind'] = PIXI.DragAndDropManager.onMouseDown.bind(this);
+        this.on("mousedown", options['mousedownbind']);
+        this.on("touchstart", options['mousedownbind']);
+
+        options['mousemovebind'] = PIXI.DragAndDropManager.onMouseMove.bind(this);
+        this.on("mousemove", options['mousemovebind']);
+        this.on("touchmove", options['mousemovebind']);
+
+        options['mouseupbind'] = PIXI.DragAndDropManager.onMouseUp.bind(this);
+        this.on("mouseup", options['mouseupbind']);
+        this.on("touchend", options['mouseupbind']);
+
+        options['mouseupoutsidebind'] = PIXI.DragAndDropManager.onMouseUpOutside.bind(this);
+        this.on("mouseupoutside", options['mouseupoutsidebind']);
+        this.on("touchendoutside", options['mouseupoutsidebind']);
     }
 
     // both name and val set
@@ -120,6 +145,11 @@
         if(name === 'snap' && val)
         {
             this.snapElements = [];
+        }
+        // only initialize this array if we actually use collision
+        if(name === 'snap' && val)
+        {
+            this.collidableElements = [];
         }
     }
 
@@ -147,7 +177,7 @@ PIXI.DisplayObject.prototype.droppable = function( name, val )
     else if(val === undefined)
     {
         var options = name || {};
-
+        this.DragAndDropManager = options['manager'];
         // fill options with defaults
         for(var prop in PIXI.DragAndDropManager.options.drop)
         {
@@ -186,8 +216,14 @@ PIXI.DisplayObject.prototype.droppable = function( name, val )
  * @class DragAndDropManager
  * @constructor
  */
-PIXI.DragAndDropManager = function()
+PIXI.DragAndDropManager = function(interactionManager)
 {
+
+    /**
+     * The Manager we use for interactions, we hack our custom update function into this
+     * @type {*}
+     */
+    this.interactionManager = interactionManager;
 
     /**
      * An array containing all the draggable items from our interactive tree.
@@ -225,10 +261,31 @@ PIXI.DragAndDropManager = function()
      * @type Boolean
      */
     this.isTicking = false;
+
 };
 
 // constructor
 PIXI.DragAndDropManager.prototype.constructor = PIXI.DragAndDropManager;
+
+PIXI.DragAndDropManager.prototype.refresh = function(){
+    this.clear();
+
+    var topDisplayObject = this.interactionManager.renderer._lastObjectRendered
+    this.findDraggableDroppable(topDisplayObject);
+}
+
+PIXI.DragAndDropManager.prototype.findDraggableDroppable = function(root){
+    // collect draggables & droppables from the interactive tree.
+    this.collect(root);
+
+    if(root.interactiveChildren){
+        var children = root.children;
+        for(var i = children.length - 1; i >= 0; i--)
+        {
+            this.findDraggableDroppable(children[i]);
+        }
+    }
+}
 
 /**
  * @method clear
@@ -258,6 +315,7 @@ PIXI.DragAndDropManager.prototype.collect = function(child)
     {
         this.droppableItems.push(child);
     }
+
 };
 
 /**
@@ -294,7 +352,8 @@ PIXI.DragAndDropManager.prototype.onDrag = function(item, mouse)
             for(i = item.children.length - 1; i >= 0; i--)
             {
                 child = item.children[i];
-                if((child.label === options.handle || (child.__draggable && child.dragOptions.label === options.handle) || (child.__droppable && child.dropOptions.label === options.handle)) && item.stage.interactionManager.hitTest(child, mouse))
+                if((child.label === options.handle || (child.__draggable && child.dragOptions.label === options.handle) || (child.__droppable && child.dropOptions.label === options.handle)) &&
+                    this.interactionManager.hitTest(child, mouse))
                 {
                     validHandle = true;
                     break;
@@ -310,7 +369,7 @@ PIXI.DragAndDropManager.prototype.onDrag = function(item, mouse)
         }
 
         // handle is sprite
-        else if(!item.stage.interactionManager.hitTest(options.handle, mouse))
+        else if(!this.interactionManager.hitTest(options.handle, mouse))
         {
             item.__isDragging = false;
             return;
@@ -327,7 +386,7 @@ PIXI.DragAndDropManager.prototype.onDrag = function(item, mouse)
             for(i = item.children.length - 1; i >= 0; i--)
             {
                 child = item.children[i];
-                if((child.label === options.cancel || (child.__draggable && child.dragOptions.label === options.cancel) || (child.__droppable && child.dropOptions.label === options.cancel)) && item.stage.interactionManager.hitTest(child, mouse))
+                if((child.label === options.cancel || (child.__draggable && child.dragOptions.label === options.cancel) || (child.__droppable && child.dropOptions.label === options.cancel)) && this.interactionManager.hitTest(child, mouse))
                 {
                     item.__isDragging = false;
                     return;
@@ -336,7 +395,8 @@ PIXI.DragAndDropManager.prototype.onDrag = function(item, mouse)
         }
 
         // label is sprite
-        else if(item.stage.interactionManager.hitTest(options.cancel, mouse))
+        //TODO use other interactionmanager
+        else if(this.interactionManager.hitTest(options.cancel, mouse))
         {
             item.__isDragging = false;
             return;
@@ -363,12 +423,12 @@ PIXI.DragAndDropManager.prototype.onDrag = function(item, mouse)
     // define start x / y
     if(!mouse.start)
     {
-        mouse.start = mouse.global.clone();
+        mouse.start = mouse.data.global.clone();
     }
     else
     {
-        mouse.start.x = mouse.global.x;
-        mouse.start.y = mouse.global.y;
+        mouse.start.x = mouse.data.global.x;
+        mouse.start.y = mouse.data.global.y;
     }
 
     // check for opacity
@@ -386,10 +446,11 @@ PIXI.DragAndDropManager.prototype.onDrag = function(item, mouse)
  */
 PIXI.DragAndDropManager.prototype.onDragStart = function(item, mouse)
 {
+    this.refresh();//TODO find a replacement for rebuildInteractiveGraph
     var options = item.dragOptions;
 
     // verify the minimum drag distance
-    if(Math.abs(mouse.start.x - mouse.global.x) < options.distance && Math.abs(mouse.start.y - mouse.global.y) < options.distance)
+    if(Math.abs(mouse.start.x - mouse.data.global.x) < options.distance && Math.abs(mouse.start.y - mouse.data.global.y) < options.distance)
     {
         item.__dragStart = false;
         return;
@@ -465,6 +526,28 @@ PIXI.DragAndDropManager.prototype.onDragStart = function(item, mouse)
         }
     }
 
+    if(options.containment && options.collidable){
+        //TODO Collect things for collision detection and write them into
+        var draggables = this.draggableItems;
+        var draggable, bounds;
+
+        for(var i = draggables.length-1;i>=0;i--){
+            draggable = draggables[i];
+
+            if(draggable.worldVisible && draggable.dragOptions.collidable && draggable !== item && options.containment == draggable.dragOptions.containment){
+                bounds = draggable.getBounds();
+                draggable.collideBounds = {
+                    x: bounds.x,
+                    y: bounds.y,
+                    x2: bounds.x + bounds.width,
+                    y2: bounds.y + bounds.height,
+                    dist: 0
+                };
+                item.collidableElements.push(draggable);
+            }
+        }
+    }
+
     // call custom start callback
     if(options.start)
     {
@@ -486,25 +569,40 @@ PIXI.DragAndDropManager.prototype.onDragMove = (function()
     function sqr(x)
     {
         return x * x;
-    };
+    }
 
     return function(item, mouse)
     {
 
         var options = item.dragOptions,
-            mx = mouse.global.x,
-            my = mouse.global.y,
+            mx = mouse.data.global.x,
+            my = mouse.data.global.y,
             dx = mx - mouse.start.x,
             dy = my - mouse.start.y,
+
             x = item.original.x + dx - item.offset.x,
             y = item.original.y + dy - item.offset.y,
-            x2 = x + item.width,
-            y2 = y + item.height,
+            ox = item.dragElement.worldTransform.tx,
+            oy = item.dragElement.worldTransform.ty,
+            x2 = x + item.width * item.worldTransform.a,
+            y2 = y + item.height * item.worldTransform.d,
             containment, i;
 
         // check for containment
         if(options.containment)
         {
+            if(options.containment.getContainedElement){
+
+                //TODO Add Pivot to centerPoint calculation
+                var local = options.containment.toLocal({x:x,y:y});
+                var containedLocal = {x:local.x + item.width/2, y: local.y + item.height/2};
+                var containedPoint = options.containment.getContainedElement(item, containedLocal);
+                var global = options.containment.toGlobal(containedPoint);
+                var itemLocal = item.dragElement.parent.toLocal(global);
+                x = itemLocal.x - item.width/2;
+                y = itemLocal.y - item.height/2;
+            }else {
+                //Default case that just uses bounds
             if(options.containment === 'parent')
             {
                 containment = /*item.parent.hitArea && item.parent.hitArea.contains ? item.parent.hitArea : */item.parent.getBounds();
@@ -523,7 +621,7 @@ PIXI.DragAndDropManager.prototype.onDragMove = (function()
                 }
                 else if (x2 > containment.x + containment.width)
                 {
-                    x = containment.x + containment.width - item.width;
+                    x = containment.x + containment.width - item.width * item.worldTransform.a;
                 }
             }
 
@@ -536,10 +634,13 @@ PIXI.DragAndDropManager.prototype.onDragMove = (function()
                 }
                 else if (y2 > containment.y + containment.height)
                 {
-                    y = containment.y + containment.height - item.height;
+                    y = containment.y + containment.height - item.height * item.worldTransform.d;
                 }
             }
         }
+
+
+
 
         // check for grid elements 
         if(options.grid)
@@ -654,6 +755,27 @@ PIXI.DragAndDropManager.prototype.onDragMove = (function()
                 }
             }
         }
+            if(options.collidable){
+                var newBounds = {x:x,y:y,x2:x+item.width,y2:y+item.height};
+
+                for(var i=0;i<item.collidableElements.length;i++){
+                    var collidable = item.collidableElements[i];
+                    var bounds = collidable.collideBounds;
+
+
+                    if(bounds.x2 > newBounds.x && bounds.x < newBounds.x2 ){
+                        //x Collision
+                        if(bounds.y2 > newBounds.y && bounds.y < newBounds.y2 ){
+                            //y Collision
+                            x = ox; //Revert x and y back to previous value
+                            y = oy;
+                        }
+                    }
+                }
+            }
+        }
+
+
 
         var local = item.dragElement.parent.toLocal({x:x,y:y});
 
@@ -682,6 +804,11 @@ PIXI.DragAndDropManager.prototype.onDragMove = (function()
             options.drag(item, mouse);
         }
 
+        // callback on object itself
+        if(item.ondrag) {
+            item.ondrag({target: item});
+        }
+
         // TODO: visual feedback for droppables
     };
 
@@ -697,6 +824,7 @@ PIXI.DragAndDropManager.prototype.onDragMove = (function()
  */
 PIXI.DragAndDropManager.prototype.onDrop = function(item, mouse)
 {
+    this.refresh(); //TODO find a replacement for rebuildInteractiveGraph
 
     var options = item.dragOptions;
 
@@ -777,9 +905,23 @@ PIXI.DragAndDropManager.prototype.onDrop = function(item, mouse)
         // call drop on intersects
         for(i = intersects.length - 1; i >= 0; i--)
         {
-            if(intersects[i].dropOptions.drop)
+            var intersect = intersects[i];
+            if(intersect.dropOptions.drop)
             {
-                intersects[i].dropOptions.drop(item, mouse);
+                intersect.dropOptions.drop(item, mouse);
+
+                var snap =item.dragOptions.snapTo;
+                if(snap){
+                    if(snap == "middle"){
+                        var transform = intersect.worldTransform
+                        var x = transform.tx + intersect.width/2 - item.width/2;
+                        var y = transform.ty + intersect.height/2 - item.height/2;
+                        var local = item.dragElement.parent.toLocal({x:x,y:y});
+                        item.dragElement.x = local.x;
+                        item.dragElement.y = local.y;
+                    }
+                }
+
             }
         }
     }
@@ -909,6 +1051,12 @@ PIXI.DragAndDropManager.prototype.stop = function(item, mouse)
         item.snapElements.length = 0;
     }
 
+    // reset snap elements array
+    if(item.dragOptions.collidable)
+    {
+        item.collidableElements.length = 0;
+    }
+
     // call custom stop callback
     if(item.dragOptions.stop)
     {
@@ -982,7 +1130,7 @@ PIXI.DragAndDropManager.prototype.intersect = function(item, mouse, droppable, c
         
         // the mouse pointer must be inside the target
         case 'pointer':
-            return item.stage.interactionManager.hitTest(droppable, mouse);
+            return this.interactionManager.hitTest(droppable, mouse);
 
         // the draggable object must at least slightly touch the target
         case 'touch':
@@ -1024,7 +1172,8 @@ PIXI.DragAndDropManager.onMouseDown = function(mouse)
 
     // item.__isDragging true to notify the other methods that this element is being dragged.
     this.__isDragging = true;
-    this.stage.interactionManager.DragAndDropManager.onDrag(this, mouse);
+    //TODO Other Interaction Manager
+    this.DragAndDropManager.onDrag(this, mouse);
 };
 
 /**
@@ -1054,11 +1203,13 @@ PIXI.DragAndDropManager.onMouseMove = function(mouse)
         if(!this.__dragStart)
         {
             this.__dragStart = true;
-            this.stage.interactionManager.DragAndDropManager.onDragStart(this, mouse);
+            //TODO Other Interaction Manager
+            this.DragAndDropManager.onDragStart(this, mouse);
         }
         else
         {
-            this.stage.interactionManager.DragAndDropManager.onDragMove(this, mouse);
+            //TODO Other Interaction Manager
+            this.DragAndDropManager.onDragMove(this, mouse);
         }
     }
 };
@@ -1089,7 +1240,8 @@ PIXI.DragAndDropManager.onMouseUp = function(mouse)
         if(this.__dragStart)
         {
             this.__dragStart = false;
-            this.stage.interactionManager.DragAndDropManager.onDrop(this, mouse);
+            //TODO Other Interaction Manager
+            this.DragAndDropManager.onDrop(this, mouse);
         }
     }
 };
@@ -1120,7 +1272,8 @@ PIXI.DragAndDropManager.onMouseUpOutside = function(mouse)
         if(this.__dragStart)
         {
             this.__dragStart = false;
-            this.stage.interactionManager.DragAndDropManager.onDrop(this, mouse);
+            //TODO Other Interaction Manager
+            this.DragAndDropManager.onDrop(this, mouse);
         }
     }
 };
@@ -1170,41 +1323,6 @@ PIXI.DragAndDropManager.options = {
     }
 };
 
-/**
- * We are hooking into the PIXI.InteractionManager to avoid core changes.
- * This is pretty hacky.
- *
- * @method rebuildInteractiveGraph
- * @private
- */
-PIXI.interaction.InteractionManager.prototype.update = (function()
-{
 
-    // store previously set PIXI.interaction.InteractionManager.prototype.rebuildInteractiveGraph
-    var rebuildInteractiveGraph = PIXI.interaction.InteractionManager.prototype.update;
 
-    return function()
-    {
 
-        // make sure the InteractionManager has a DragAndDropManager attached.
-        if(!this.DragAndDropManager)
-        {
-            // create a brand new instance
-            this.DragAndDropManager = new PIXI.DragAndDropManager();
-        }
-        else
-        {
-            // clear the old draggable and droppable tree.
-            this.DragAndDropManager.clear();
-        }
-
-        // call original PIXI.InteractionManager.prototype.rebuildInteractiveGraph
-        rebuildInteractiveGraph.call(this);
-
-        // collect draggables & droppables from the interactive tree.
-        for(var i = this.interactiveItems.length - 1; i >= 0; i--)
-        {
-            this.DragAndDropManager.collect(this.interactiveItems[i]);
-        }
-    };
-})();
