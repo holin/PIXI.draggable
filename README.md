@@ -12,6 +12,12 @@ Simply load the pixi.draggable.js file after your pixi.js file.
 ```
 <script src="pixi.js"></script>
 <script src="pixi.draggable.js"></script>
+
+<script>
+    var renderer = PIXI.autoDetectRenderer( 960, 400, {background: 0xffffff} );
+    var interactionManager = new PIXI.interaction.InteractionManager(renderer, {});
+    var dragAndDropManager = new PIXI.DragAndDropManager(interactionManager);
+</script>
 ```
 
 #### Creating a draggable sprite ####
@@ -20,7 +26,7 @@ Simply load the pixi.draggable.js file after your pixi.js file.
 var sprite = new PIXI.Sprite(texture);
 stage.addChild(sprite);
 
-sprite.draggable();
+sprite.draggable({manager: dragAndDropManager});
 ```
 
 #### Only draggable along the x-axis ####
@@ -29,7 +35,7 @@ sprite.draggable();
 var sprite = new PIXI.Sprite(texture);
 stage.addChild(sprite);
 
-sprite.draggable({ axis: 'x' });
+sprite.draggable({ manager: dragAndDropManager, axis: 'x' });
 ```
 
 #### Full list of drag options ####
