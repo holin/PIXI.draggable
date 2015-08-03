@@ -9,7 +9,7 @@ Bag & Skillbar Demo! http://mokgames.com/draggable/demo2.html
 
 #### How to use ####
 Simply load the pixi.draggable.js file after your pixi.js file.
-```
+```html
 <script src="pixi.js"></script>
 <script src="pixi.draggable.js"></script>
 
