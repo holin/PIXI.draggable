@@ -1,5 +1,3 @@
-
-
 <!doctype html>
 <html>
 <head>
@@ -60,8 +58,11 @@ document.body.appendChild( stats.domElement );
 
     var stage = new PIXI.Container();
     var renderer = PIXI.autoDetectRenderer( 960, 400, {background: 0xffffff} );
+    var interactionManager = new PIXI.interaction.InteractionManager(renderer, {});
+    var dragAndDropManager = new PIXI.DragAndDropManager(interactionManager);
+
     document.body.appendChild(renderer.view);
-    
+
     var examples = [];
     var buttons = [];
 
@@ -136,7 +137,7 @@ document.body.appendChild( stats.domElement );
     var dd1 = new box(150,150,"Drag me around");
         dd1.x = 10;
         dd1.y = 10;
-        dd1.draggable();
+        dd1.draggable({manager: dragAndDropManager});
     examples[0].addChild(dd1);
 
     // example 2
@@ -321,7 +322,7 @@ document.body.appendChild( stats.domElement );
     var dd18 = new box(100,100,"Drag me to my target");
         dd18.x = 10;
         dd18.y = 30;
-        dd18.draggable();
+        dd18.draggable({manager: dragAndDropManager});
     examples[8].addChild(dd18);
 
     // example 10
@@ -344,7 +345,7 @@ document.body.appendChild( stats.domElement );
     var dd22 = new box(100,100,"I'm draggable but can't be dropped");
         dd22.x = 120;
         dd22.y = 30;
-        dd22.draggable();
+        dd22.draggable({manager: dragAndDropManager});
     examples[9].addChild(dd22);
 
     // example 11
@@ -384,7 +385,7 @@ document.body.appendChild( stats.domElement );
     var dd27 = new box(100,100,"Drag me to my target");
         dd27.x = 10;
         dd27.y = 30;
-        dd27.draggable();
+        dd27.draggable({manager: dragAndDropManager});
     examples[10].addChild(dd27);
 
     // example 12
@@ -438,7 +439,7 @@ document.body.appendChild( stats.domElement );
     var dd35 = new box(100,100,"Drag me to my target");
         dd35.x = 10;
         dd35.y = 30;
-        dd35.draggable();
+        dd35.draggable({manager: dragAndDropManager});
     examples[12].addChild(dd35);
 
     function animate()
@@ -450,7 +451,7 @@ document.body.appendChild( stats.domElement );
     };
 
     animate();
-    
+
     </script>
 
 </body>
