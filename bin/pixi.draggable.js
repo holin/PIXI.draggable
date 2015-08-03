@@ -272,7 +272,7 @@ PIXI.DragAndDropManager.prototype.refresh = function(){
 
     var topDisplayObject = this.interactionManager.renderer._lastObjectRendered
     this.findDraggableDroppable(topDisplayObject);
-}
+};
 
 PIXI.DragAndDropManager.prototype.findDraggableDroppable = function(root){
     // collect draggables & droppables from the interactive tree.
@@ -285,7 +285,7 @@ PIXI.DragAndDropManager.prototype.findDraggableDroppable = function(root){
             this.findDraggableDroppable(children[i]);
         }
     }
-}
+};
 
 /**
  * @method clear
@@ -914,8 +914,9 @@ PIXI.DragAndDropManager.prototype.onDrop = function(item, mouse)
                 if(snap){
                     if(snap == "middle"){
                         var transform = intersect.worldTransform
-                        var x = transform.tx + intersect.width/2 - item.width/2;
-                        var y = transform.ty + intersect.height/2 - item.height/2;
+                        var itemTransform = item.worldTransform;
+                        var x = transform.tx + intersect.width/2* transform['a'] - item.width/2*itemTransform['a'];
+                        var y = transform.ty + intersect.height/2*transform['d'] - item.height/2*itemTransform['d'];
                         var local = item.dragElement.parent.toLocal({x:x,y:y});
                         item.dragElement.x = local.x;
                         item.dragElement.y = local.y;
