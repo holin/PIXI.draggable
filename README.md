@@ -3,9 +3,14 @@ PIXI.draggable
 
 The easiest way to get drag &amp; drop done in PIXI.js!
 
-Demo: http://mokgames.com/draggable/
+```
+python -m SimpleHTTPServer 8000
+```
+visit: [`http://localhost:8000/examples/demo1.html`](http://localhost:8000/examples/demo1.html)
 
-Bag & Skillbar Demo! http://mokgames.com/draggable/demo2.html
+~~Demo: http://mokgames.com/draggable/~~
+
+~~Bag & Skillbar Demo! http://mokgames.com/draggable/demo2.html~~
 
 #### How to use ####
 Simply load the pixi.draggable.js file after your pixi.js file.
