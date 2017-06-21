@@ -92,7 +92,12 @@ document.body.appendChild( stats.domElement );
             width: 150,
             height: 30,
             ninepatch: i > 7 ? "img/blue_button_0*.png" : "img/yellow_button_0*.png",
-            text: { font: "bold 10pt Arial", fill: "#000" },
+            text: {
+                fontSize: "10pt",
+                fontFamily: "Arial",
+                fontWeith: "bold",
+                fill: "#000"
+            },
             value:items[i],
             valign: "middle",
             align: "left",
@@ -124,7 +129,11 @@ document.body.appendChild( stats.domElement );
         var b = new PIXI.NinePatch(w,h,n||"img/yellow_button_0*.png");
         if(t)
         {
-            var tb = new PIXI.Text(t, { font: "11pt arial", wordWrap: true, wordWrapWidth: w-20 });
+            var tb = new PIXI.Text(t, {
+                fontSize: "11pt",
+                fontFamily: "Arial",
+                wordWrap: true,
+                wordWrapWidth: w-20 });
                 tb.x = 10;
                 tb.y = 10;
                 b.text = tb;
@@ -192,15 +201,15 @@ document.body.appendChild( stats.domElement );
         dd8.draggable({
           start: function() {
             count[ 0 ]++;
-            dd8.text.setText("Start: x"+count[0]+"\nMove: x"+count[1]+"\nStop: x"+count[2]+"");
+            dd8.text.text = ("Start: x"+count[0]+"\nMove: x"+count[1]+"\nStop: x"+count[2]+"");
           },
           drag: function() {
             count[ 1 ]++;
-            dd8.text.setText("Start: x"+count[0]+"\nMove: x"+count[1]+"\nStop: x"+count[2]+"");
+            dd8.text.text = ("Start: x"+count[0]+"\nMove: x"+count[1]+"\nStop: x"+count[2]+"");
           },
           stop: function() {
             count[ 2 ]++;
-            dd8.text.setText("Start: x"+count[0]+"\nMove: x"+count[1]+"\nStop: x"+count[2]+"");
+            dd8.text.text = ("Start: x"+count[0]+"\nMove: x"+count[1]+"\nStop: x"+count[2]+"");
           }
         });
     examples[3].addChild(dd8);
@@ -213,15 +222,15 @@ document.body.appendChild( stats.domElement );
           distance: 10,
           start: function() {
             count2[ 0 ]++;
-            dd8_2.text.setText("Drag me minimum 10px\nStart: x"+count2[0]+"\nMove: x"+count2[1]+"\nStop: x"+count2[2]+"");
+            dd8_2.text.text = ("Drag me minimum 10px\nStart: x"+count2[0]+"\nMove: x"+count2[1]+"\nStop: x"+count2[2]+"");
           },
           drag: function() {
             count2[ 1 ]++;
-            dd8_2.text.setText("Drag me minimum 10px\nStart: x"+count2[0]+"\nMove: x"+count2[1]+"\nStop: x"+count2[2]+"");
+            dd8_2.text.text = ("Drag me minimum 10px\nStart: x"+count2[0]+"\nMove: x"+count2[1]+"\nStop: x"+count2[2]+"");
           },
           stop: function() {
             count2[ 2 ]++;
-            dd8_2.text.setText("Drag me minimum 10px\nStart: x"+count2[0]+"\nMove: x"+count2[1]+"\nStop: x"+count2[2]+"");
+            dd8_2.text.text = ("Drag me minimum 10px\nStart: x"+count2[0]+"\nMove: x"+count2[1]+"\nStop: x"+count2[2]+"");
           }
         });
     examples[3].addChild(dd8_2);
@@ -316,7 +325,7 @@ document.body.appendChild( stats.domElement );
     var dd19 = new box(200, 200, "Drop here", "img/white_button_0*.png");
         dd19.x = 120;
         dd19.y = 30;
-        dd19.droppable({ drop: function() { dd19.text.setText("Dropped!"); } });
+        dd19.droppable({ drop: function() { dd19.text.text = ("Dropped!"); } });
     examples[8].addChild(dd19);
 
     var dd18 = new box(100,100,"Drag me to my target");
@@ -331,14 +340,14 @@ document.body.appendChild( stats.domElement );
         dd20.y = 30;
         dd20.droppable({
             accept: "draggable",
-            drop: function() { dd20.text.setText("Dropped!"); }
+            drop: function() { dd20.text.text = ("Dropped!"); }
         });
     examples[9].addChild(dd20);
 
     var dd21 = new box(100,100,"Drag me to my target");
         dd21.x = 10;
         dd21.y = 30;
-        dd21.draggable({ label: "draggable" });
+        dd21.draggable({ manager: dragAndDropManager, label: "draggable" });
     examples[9].addChild(dd21);
     examples[9].x = 100;
 
@@ -353,7 +362,7 @@ document.body.appendChild( stats.domElement );
         dd23.x = 300;
         dd23.y = 30;
         dd23.droppable({
-            drop: function() { dd23.text.setText("Dropped!"); }
+            drop: function() { dd23.text.text = ("Dropped!"); }
         });
     examples[10].addChild(dd23);
 
@@ -361,7 +370,7 @@ document.body.appendChild( stats.domElement );
         dd25.x = 10;
         dd25.y = 50;
         dd25.droppable({
-            drop: function() { dd25.text.setText("Dropped!"); }
+            drop: function() { dd25.text.text = ("Dropped!"); }
         });
     dd23.addChild(dd25);
 
@@ -369,7 +378,7 @@ document.body.appendChild( stats.domElement );
         dd24.x = 10;
         dd24.y = 190;
         dd24.droppable({
-            drop: function() { dd24.text.setText("Dropped!"); }
+            drop: function() { dd24.text.text = ("Dropped!"); }
         });
     examples[10].addChild(dd24);
 
@@ -378,7 +387,7 @@ document.body.appendChild( stats.domElement );
         dd26.y = 50;
         dd26.droppable({
             greedy: true,
-            drop: function() { dd26.text.setText("Dropped!"); }
+            drop: function() { dd26.text.text = ("Dropped!"); }
         });
     dd24.addChild(dd26);
 
@@ -393,20 +402,20 @@ document.body.appendChild( stats.domElement );
         dd28.x = 260;
         dd28.y = 30;
         dd28.droppable({
-            drop: function() { dd28.text.setText("Dropped!"); }
+            drop: function() { dd28.text.text = ("Dropped!"); }
         });
     examples[11].addChild(dd28);
 
     var dd29 = new box(100,100,"I revert when I'm dropped");
         dd29.x = 10;
         dd29.y = 30;
-        dd29.draggable({ revert: "valid" });
+        dd29.draggable({ manager: dragAndDropManager, revert: "valid" });
     examples[11].addChild(dd29);
 
     var dd30 = new box(100,100,"I revert when I'm not dropped");
         dd30.x = 120;
         dd30.y = 30;
-        dd30.draggable({ revert: "invalid" });
+        dd30.draggable({ manager: dragAndDropManager, revert: "invalid" });
     examples[11].addChild(dd30);
 
 
@@ -415,25 +424,25 @@ document.body.appendChild( stats.domElement );
     var dd31 = new box(150, 150, "Intersect", "img/white_button_0*.png");
         dd31.x = 120;
         dd31.y = 30;
-        dd31.droppable({ tolerance: "intersect", drop: function() { dd31.text.setText("Dropped!"); } });
+        dd31.droppable({ tolerance: "intersect", drop: function() { dd31.text.text = ("Dropped!"); } });
     examples[12].addChild(dd31);
 
     var dd32 = new box(150, 150, "Fit", "img/white_button_0*.png");
         dd32.x = 280;
         dd32.y = 30;
-        dd32.droppable({ tolerance: "fit", drop: function() { dd32.text.setText("Dropped!"); } });
+        dd32.droppable({ tolerance: "fit", drop: function() { dd32.text.text = ("Dropped!"); } });
     examples[12].addChild(dd32);
 
     var dd33 = new box(150, 150, "Pointer", "img/white_button_0*.png");
         dd33.x = 120;
         dd33.y = 190;
-        dd33.droppable({ tolerance: "pointer", drop: function() { dd33.text.setText("Dropped!"); } });
+        dd33.droppable({ tolerance: "pointer", drop: function() { dd33.text.text = ("Dropped!"); } });
     examples[12].addChild(dd33);
 
     var dd34 = new box(150, 150, "Touch", "img/white_button_0*.png");
         dd34.x = 280;
         dd34.y = 190;
-        dd34.droppable({ tolerance: "touch", drop: function() { dd34.text.setText("Dropped!"); } });
+        dd34.droppable({ tolerance: "touch", drop: function() { dd34.text.text = ("Dropped!"); } });
     examples[12].addChild(dd34);
 
     var dd35 = new box(100,100,"Drag me to my target");

@@ -21,7 +21,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 *
-* 
+*
 *
 */
 
@@ -107,7 +107,7 @@
             this.collidableElements = [];
         }
 
-        // set interactive 
+        // set interactive
         this.interactive = true;
         this.__draggable = true;
 
@@ -232,7 +232,7 @@ PIXI.DragAndDropManager = function(interactionManager)
      * @private
      */
     this.draggableItems = [];
-    
+
     /**
      * An array containing all the droppable items from our interactive tree.
      * @property droppableItems
@@ -240,7 +240,7 @@ PIXI.DragAndDropManager = function(interactionManager)
      * @private
      */
     this.droppableItems = [];
-    
+
     /**
      * An array containing all the currently animated items.
      * @property tweeningItems
@@ -248,7 +248,7 @@ PIXI.DragAndDropManager = function(interactionManager)
      * @private
      */
     this.tweeningItems = [];
-    
+
     /**
      * @property boundTick
      * @type Function
@@ -416,7 +416,7 @@ PIXI.DragAndDropManager.prototype.onDrag = function(item, mouse)
         item.offset.set(0, 0);
     }
 
-    // get start position    
+    // get start position
     item.original.x = item.worldTransform.tx;
     item.original.y = item.worldTransform.ty;
 
@@ -487,7 +487,7 @@ PIXI.DragAndDropManager.prototype.onDragStart = function(item, mouse)
     item.dragElement.defaultCursor = options.cursor;
     item.dragElement._buttonMode = item.dragElement.buttonMode;
     item.dragElement.buttonMode = true;
-    
+
     // set opacity
     item.dragElement.alpha = item.alpha * options.alpha;
 
@@ -642,7 +642,7 @@ PIXI.DragAndDropManager.prototype.onDragMove = (function()
 
 
 
-        // check for grid elements 
+        // check for grid elements
         if(options.grid)
         {
             var grid;
@@ -998,7 +998,7 @@ PIXI.DragAndDropManager.prototype.tick = function()
 
     // call next tick
     requestAnimationFrame(this.boundTick);
-    
+
     var now = Date.now(),
         tween, elapsed, item;
 
@@ -1115,7 +1115,7 @@ PIXI.DragAndDropManager.prototype.destroyHelperSprite = function(item)
  */
 PIXI.DragAndDropManager.prototype.intersect = function(item, mouse, droppable, currBounds)
 {
-    var bounds;           
+    var bounds;
     switch(droppable.dropOptions.tolerance)
     {
 
@@ -1123,12 +1123,12 @@ PIXI.DragAndDropManager.prototype.intersect = function(item, mouse, droppable, c
         case 'intersect':
             bounds = droppable.getBounds();
             return (bounds.x < currBounds.x + (currBounds.width/2) && currBounds.x2 - (currBounds.width/2) < bounds.x+bounds.width && bounds.y < currBounds.y + (currBounds.height/2) && currBounds.y2 - (currBounds.height/2) < bounds.y+bounds.height);
-        
+
         // the draggable object must fit into the target
         case 'fit':
             bounds = droppable.getBounds();
             return (bounds.x <= currBounds.x && currBounds.x2 <= bounds.x+bounds.width && bounds.y <= currBounds.y && currBounds.y2 <= bounds.y+bounds.height);
-        
+
         // the mouse pointer must be inside the target
         case 'pointer':
             return this.interactionManager.hitTest(droppable, mouse);
