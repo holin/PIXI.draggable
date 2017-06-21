@@ -159,38 +159,38 @@ document.body.appendChild( stats.domElement );
     var dd4 = new box(100,100,"I'm contained within the box");
         dd4.x = 10;
         dd4.y = 10;
-        dd4.draggable({ containment: db });
+        dd4.draggable({manager: dragAndDropManager, containment: db });
     db.addChild(dd4);
 
     var dd4_2 = new box(100,100,"Text contained in parent!");
         dd4_2.x = 120;
         dd4_2.y = 10;
-        dd4_2.text.draggable({ containment: "parent" });
+        dd4_2.text.draggable({ manager: dragAndDropManager,containment: "parent" });
     db.addChild(dd4_2);
 
     var dd2 = new box(100,100,"I can be dragged only vertically");
         dd2.x = 10;
         dd2.y = 30;
-        dd2.draggable({ axis: "y", cursor: "n-resize" });
+        dd2.draggable({manager: dragAndDropManager, axis: "y", cursor: "n-resize" });
     examples[1].addChild(dd2);
 
     var dd3 = new box(100,100,"I can be dragged only horizontally");
         dd3.x = 120;
         dd3.y = 30;
-        dd3.draggable({ axis: "x", cursor: "e-resize" });
+        dd3.draggable({manager: dragAndDropManager, axis: "x", cursor: "e-resize" });
     examples[1].addChild(dd3);
 
     // example 3
     var dd6 = new box(150,150,"I will always stick to the center (relative to the mouse)");
         dd6.x = 10;
         dd6.y = 10;
-        dd6.draggable({ cursor: "move", cursorAt: [ 75, 75 ] });
+        dd6.draggable({manager: dragAndDropManager, cursor: "move", cursorAt: [ 75, 75 ] });
     examples[2].addChild(dd6);
 
     var dd7 = new box(150,150,"My cursor is at left -5 and top -5");
         dd7.x = 170;
         dd7.y = 10;
-        dd7.draggable({ cursor: "crosshair", cursorAt: [ -5, -5 ] });
+        dd7.draggable({manager: dragAndDropManager, cursor: "crosshair", cursorAt: [ -5, -5 ] });
     examples[2].addChild(dd7);
 
     // example 4
@@ -199,6 +199,7 @@ document.body.appendChild( stats.domElement );
         dd8.x = 10;
         dd8.y = 10;
         dd8.draggable({
+          manager: dragAndDropManager,
           start: function() {
             count[ 0 ]++;
             dd8.text.text = ("Start: x"+count[0]+"\nMove: x"+count[1]+"\nStop: x"+count[2]+"");
@@ -219,6 +220,7 @@ document.body.appendChild( stats.domElement );
         dd8_2.x = 170;
         dd8_2.y = 10;
         dd8_2.draggable({
+          manager: dragAndDropManager,
           distance: 10,
           start: function() {
             count2[ 0 ]++;
@@ -239,80 +241,80 @@ document.body.appendChild( stats.domElement );
     var dd9 = new box(150,150,"I can be dragged only by this handle (text)");
         dd9.x = 10;
         dd9.y = 10;
-        dd9.draggable({ handle: dd9.text });
+        dd9.draggable({ manager: dragAndDropManager, handle: dd9.text });
     examples[4].addChild(dd9);
 
     var dd10 = new box(150,150,"You can't drag me by this handle. (text)");
         dd10.x = 170;
         dd10.y = 10;
-        dd10.draggable({ cancel: dd10.text });
+        dd10.draggable({ manager: dragAndDropManager, cancel: dd10.text });
     examples[4].addChild(dd10);
 
     // example 6
     var dd11 = new box(150,150,"Revert the original");
         dd11.x = 10;
         dd11.y = 10;
-        dd11.draggable({ revert: true });
+        dd11.draggable({ manager: dragAndDropManager, revert: true });
     examples[5].addChild(dd11);
 
     var dd12 = new box(150,150,"Revert the helper");
         dd12.x = 170;
         dd12.y = 10;
-        dd12.draggable({ revert: true, helper: "clone" });
+        dd12.draggable({ manager: dragAndDropManager, revert: true, helper: "clone" });
     examples[5].addChild(dd12);
 
     // example 7
     var dd13 = new box(150,150,"Default (snap: true), snaps to all other draggable elements");
         dd13.x = 10;
         dd13.y = 10;
-        dd13.draggable({ snap: true });
+        dd13.draggable({ manager: dragAndDropManager, snap: true });
     examples[6].addChild(dd13);
 
     var dd14 = new box(150,150,"I snap to a 20 x 20 grid");
         dd14.x = 170;
         dd14.y = 10;
-        dd14.draggable({ grid: [ 20, 20 ] });
+        dd14.draggable({ manager: dragAndDropManager, grid: [ 20, 20 ] });
     examples[6].addChild(dd14);
 
 
     var dd15 = new box(150,150,"I snap to a 80 x 80 grid");
         dd15.x = 330;
         dd15.y = 10;
-        dd15.draggable({ grid: [ 80, 80 ] });
+        dd15.draggable({ manager: dragAndDropManager, grid: [ 80, 80 ] });
     examples[6].addChild(dd15);
 
 
     var dd15_2 = new box(80,80,"Mode: Inner","img/blue_button_0*.png");
         dd15_2.x = 10;
         dd15_2.y = 300;
-        dd15_2.draggable({ label: "blue", snap: true, snapMode: "inner" });
+        dd15_2.draggable({ manager: dragAndDropManager, label: "blue", snap: true, snapMode: "inner" });
     examples[6].addChild(dd15_2);
 
 
     var dd15_3 = new box(80,80,"Mode: Outer","img/blue_button_0*.png");
         dd15_3.x = 100;
         dd15_3.y = 300;
-        dd15_3.draggable({ label: "blue", snap: true, snapMode: "outer", snapSort: true });
+        dd15_3.draggable({ manager: dragAndDropManager, label: "blue", snap: true, snapMode: "outer", snapSort: true });
     examples[6].addChild(dd15_3);
 
 
     var dd15_4 = new box(80,80,"Snap to blue elements","img/blue_button_0*.png");
         dd15_4.x = 450;
         dd15_4.y = 300;
-        dd15_4.draggable({ snap: "blue", snapSort: true });
+        dd15_4.draggable({ manager: dragAndDropManager, snap: "blue", snapSort: true });
     examples[6].addChild(dd15_4);
 
     // example 8
     var dd16 = new box(150,150,"Original");
         dd16.x = 10;
         dd16.y = 10;
-        dd16.draggable({ alpha: 0.7, helper: "original" });
+        dd16.draggable({ manager: dragAndDropManager, alpha: 0.7, helper: "original" });
     examples[7].addChild(dd16);
 
     var dd17 = new box(150,150,"Semi-transparent clone");
         dd17.x = 170;
         dd17.y = 10;
-        dd17.draggable({ alpha: 0.7, helper: "clone" });
+        dd17.draggable({ manager: dragAndDropManager, alpha: 0.7, helper: "clone" });
     examples[7].addChild(dd17);
 
    /* var dd18 = new box(150,150,"I snap to a 80 x 80 grid");
